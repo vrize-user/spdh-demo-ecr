@@ -1,5 +1,6 @@
 name: CI/CD Pipeline to Build and Deploy Docker Image to ECR
 
+# Trigger the workflow on push events to the main branch
 on:
   push:
     branches:
@@ -14,13 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
-      # Step 2: Set up Java environment
+      # Step 2: Set up JDK 11
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '11' # Specify the Java version
+          distribution: 'temurin' # Use the Temurin JDK distribution (default)
+          cache: 'maven' # Cache Maven dependencies to speed up builds
 
       # Step 3: Build the application using Maven
       - name: Build with Maven
