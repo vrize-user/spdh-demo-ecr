@@ -26,7 +26,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          region: ${{ secrets.AWS_REGION }} # Ensure the region is provided
+          region: us-east-2 # Ensure the region is provided
 
       # Step 4: Build and tag the Docker image
       - name: Build Docker image
