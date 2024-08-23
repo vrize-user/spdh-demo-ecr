@@ -1,6 +1,5 @@
 name: CI/CD Pipeline to Build and Deploy Docker Image to ECR
 
-# Trigger the workflow on push events to the main branch
 on:
   push:
     branches:
@@ -10,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    steps:
       # Step 4: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
