@@ -1,34 +1,41 @@
-name: CI/CD Pipeline to Build and Deploy Docker Image to ECR
+name: Build and Deploy Docker Image to ECR
 
+# Trigger the workflow on push events to the main branch
 on:
   push:
     branches:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 4: Set up Docker Buildx
+      # Step 1: Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 5: Log in to Amazon ECR
+      # Step 3: Log in to Amazon ECR
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          region: ${{ secrets.AWS_REGION }} # Ensure the region is provided
 
-      # Step 6: Build and tag the Docker image
+      # Step 4: Build and tag the Docker image
       - name: Build Docker image
         run: |
           docker build -t myapp:latest .
           docker tag myapp:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/myapp:latest
 
-      # Step 7: Push the Docker image to ECR
+      # Step 5: Push the Docker image to ECR
       - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/myapp:latest
 
-      # Step 8: Deploy to an environment (optional)
-      # Add deployment steps here if you are deploying the image to a running environment
