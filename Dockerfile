@@ -6,9 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Update the package list and install necessary packages
 RUN apt-get update && \
-    apt-get install -y \
-    openjdk-11-jdk \  # Install Java
+    apt-get install -y openjdk-11-jdk && \
+    apt-get clean
 
 # Set default command to run when a container is started
 CMD ["bash"]
+
 
