@@ -1,25 +1,16 @@
-# Use an official Maven image to build the application
-FROM maven:3.8.5-openjdk-11 AS build
+# Use the official Ubuntu image as the base image
+FROM ubuntu:latest
 
-# Set the working directory inside the container
-WORKDIR /app
+# Set environment variables to prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy the pom.xml and download the dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# Update the package list and install necessary packages
+RUN apt-get update && \
+    apt-get install -y \
+    openjdk-11-jdk \  # Install Java
+    python3 \         # Install Python
+    python3-pip \     # Install pip for Python
+    && apt-get clean
 
-# Copy the source code and build the application
-COPY src ./src
-RUN mvn package -DskipTests
-
-# Use an OpenJDK image to run the application
-FROM openjdk:11-jre-slim
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the built .jar file from the Maven container
-COPY --from=build /app/target/myapp.jar /app/myapp.jar
-
-# Specify the command to run the application
-CMD ["java", "-jar", "myapp.jar"]
+# Set default command to run when a container is started
+CMD ["bash"]
