@@ -29,17 +29,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      # Step 4: Log in to Amazon ECR
+      # Step 4: Create ECR repository if it doesn't exist
+      - name: Create ECR repository
+        run: |
+          aws ecr describe-repositories --repository-names myapp --region ${{ secrets.AWS_DEFAULT_REGION }} || \
+          aws ecr create-repository --repository-name myapp --region ${{ secrets.AWS_DEFAULT_REGION }}
+
+      # Step 5: Log in to Amazon ECR
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      # Step 5: Build and tag the Docker image
+      # Step 6: Build and tag the Docker image
       - name: Build Docker image
         run: |
           docker build -t myapp:latest .
           docker tag myapp:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/myapp:latest
 
-      # Step 6: Push the Docker image to ECR
+      # Step 7: Push the Docker image to ECR
       - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/myapp:latest
